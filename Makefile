@@ -12,7 +12,7 @@ CACHE_FILES = \
 	build/icon.png \
 	app.webmanifest
 
-DEPLOY_DIR = deploy/
+DEPLOY_DIR = docs/
 
 NPM = node_modules/
 
