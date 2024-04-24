@@ -35,7 +35,6 @@ function forwardMidi(event, source) {
         // Only send the MIDI event out to the devices it did not come from
         if (port.name === source.name) return;
         if (blacklist.includes(port.name)) return;
-        console.log(`sending to ${port.name} from ${source.name}`)
         port.send(event.data);
     })
 }
