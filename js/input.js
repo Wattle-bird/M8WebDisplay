@@ -1,4 +1,4 @@
-// Copyright 2021-2022 James Deery
+// Copyright 2021-2024 James Deery, Luna Hortin
 // Released under the MIT licence, https://opensource.org/licenses/MIT
 
 import { appendButton, on, off } from './util.js';
@@ -7,6 +7,9 @@ import * as Keyboard from './keyboard.js';
 
 let connection;
 let keyState = 0;
+
+const buttons = ['up', 'down', 'left', 'right', 'start', 'select', 'option', 'edit'];
+const pressTypes = ['tap', 'depress', 'release'];
 
 const keyBitMap = {
     up: 6,
@@ -105,6 +108,22 @@ function handleAction(action, isDown, e) {
         .classList
         .toggle('active', isDown);
 }
+
+export function sendButton(button, pressType) {
+    if (!buttons.includes(button) || !pressTypes.includes(pressType)) {
+        console.log(`Cannot ${pressType} ${button}`)
+    }
+
+    if (pressType === 'depress') {
+        handleAction(button, true);
+    } else if (pressType === 'release') {
+        handleAction(button, false);
+    } else if (pressType === 'tap') {
+        handleAction(button, true);
+        setTimeout(() => handleAction(button, false), 50)
+    }
+}
+
 
 export function setup(connection_) {
     connection = connection_;
