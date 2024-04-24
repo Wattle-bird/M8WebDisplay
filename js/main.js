@@ -1,4 +1,4 @@
-// Copyright 2021-2022 James Deery
+// Copyright 2021-2024 James Deery, Luna Hortin
 // Released under the MIT licence, https://opensource.org/licenses/MIT
 
 import { UsbConnection } from './usb.js';
@@ -14,6 +14,7 @@ import * as Audio from './audio.js';
 import * as Settings from './settings.js';
 import * as Firmware from './firmware.js';
 import * as Wake from './wake.js';
+import * as Midi from './midi.js'
 
 function setBackground(r, g, b) {
     const colour = `rgb(${r}, ${g}, ${b})`;
@@ -97,6 +98,11 @@ Settings.onChange('enableAudio', value => {
     else { Audio.disable(); }
 });
 
+Settings.onChange('midiForwarding', value => {
+    if (value) { Midi.startForwarding() }
+    else { Midi.stopForwarding(); }
+});
+
 Settings.onChange('snapPixels', () => resizeCanvas());
 
 Settings.onChange('controlMapping', () => {
@@ -117,6 +123,8 @@ Settings.onChange('fullscreen', () => {
         document.body.requestFullscreen();
     }
 });
+
+
 
 Settings.onChange('about', () => show('#info'));
 

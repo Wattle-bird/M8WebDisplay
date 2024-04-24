@@ -1,4 +1,4 @@
-// Copyright 2021-2022 James Deery
+// Copyright 2021-2024 James Deery, Luna Hortin
 // Released under the MIT licence, https://opensource.org/licenses/MIT
 
 import { show, hide, toggle, appendButton, on } from './util.js';
@@ -26,6 +26,7 @@ setupSelect(
 
 setupToggle('snapPixels', 'Snap Pixels', true);
 setupToggle('virtualKeyboard', 'Virtual Keyboard', true);
+setupToggle('midiForwarding', 'Midi Forwarding', false);
 setupToggle('preventSleep', 'Prevent Sleep', false);
 setupButton('controlMapping', 'Control Mapping');
 setupButton('firmware', 'Load Firmware');
