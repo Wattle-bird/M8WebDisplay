@@ -60,7 +60,7 @@ async function findDeviceId() {
     return devices
         .filter(d =>
             d.kind === 'audioinput' &&
-            /M8/.test(d.label) &&
+            (/M8/.test(d.label) || /Headset earpiece/.test(d.label)) &&
             d.deviceId !== 'default' &&
             d.deviceId !== 'communications')
         .map(d => d.deviceId)[0];
