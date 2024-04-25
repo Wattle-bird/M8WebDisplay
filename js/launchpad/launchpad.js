@@ -2,40 +2,97 @@
 // Released under the MIT licence, https://opensource.org/licenses/MIT
 
 import * as Midi from '../midi.js'
+import * as M8 from './m8.js'
+import * as Input from '../input.js'
 
+const controlButtons = ['start', 'select', 'option', 'edit', 'left', 'down', 'up', 'right'];
 
-const m8 = "M8 MIDI 1";
-const launchpad = "Launchpad X LPX MIDI In";
+let controlPadEnabled = true;
 
-function launchpadSysex(data) {
-    const sendData = [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0c].concat(data); // Launchpad sysex prefix
-    sendData.push(0xf7); // Sysex suffix
-    Midi.sendMidiTo(launchpad, sendData);
+export function matchName(name) {
+    return name.includes("Launchpad") && !name.includes("DAW");
 }
 
-function xyToNote(xy) {
-    const x = xy % 16;
-    const y = (xy - x) / 16;
+function sendMidi(data) {
+    Midi.sendMidiTo(matchName, data);
 }
 
-function handleLaunchpadNote(noteNum, velocity) {
-    if (velocity !== 0) {
-        Midi.sendMidiTo(launchpad, [0x90, noteNum, 0x24]); // note on. light up the pressed pad
-    } else {
-        Midi.sendMidiTo(launchpad, [0x90, noteNum, 0x0]); // note on. dim the pressed pad
+function sendSysex(data) {
+    data = [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0c].concat(data); // Launchpad sysex prefix
+    data.push(0xf7); // Sysex suffix
+    sendMidi(data);
+}
+
+function sendNote(note, velocity) {
+    sendMidi([0x90, note, velocity]);
+}
+
+function cellPosition(cell) {
+    const x = cell % 10 - 1;
+    const y = Math.floor(cell / 10) - 1;
+    return [x, y];
+}
+
+function cellToNote(cell) {
+    const [x, y] = cellPosition(cell);
+    return 36 + (y*4) + x;
+}
+
+function handleControlButton(x, y, isDown) {
+    let button
+    if (y === 6) {
+        if (x === 0) {
+            button = 'left'
+        } else if (x === 1) {
+            button = 'down'
+        } else if (x === 2) {
+            button = 'right'
+        } else if (x === 6) {
+            button = 'select'
+        } else if (x === 7) {
+            button = 'start'
+        }
     }
-    Midi.sendMidiTo(m8, [0x90, noteNum, velocity]);
+    else if (y === 7) {
+        if (x === 1) {
+            button = 'up'
+        } else if (x === 6) {
+            button = 'option'
+        } else if (x === 7) {
+            button = 'edit'
+        }
+    }
+    if (button)
+        Input.sendButton(button, isDown ? "depress" : "release");
 }
 
-export function handleLaunchpadInput(data) {
+function handleNote(noteNum, velocity) {
+    if (velocity !== 0) {
+        sendNote(noteNum, 0x24); // light up the pressed pad
+    } else {
+        sendNote(noteNum, 0); // dim the pressed pad
+    }
+
+    const [x, y] = cellPosition(noteNum);
+    console.log(x, y)
+    if (y >= 6 && controlPadEnabled) {
+        handleControlButton(x, y, velocity !== 0);
+        return;
+    }
+
+
+    M8.sendNote(cellToNote(noteNum), velocity);
+}
+
+export function handleInput(data) {
     const messageType = data[0];
     if (messageType === 0xf0) return; // don't forward sysex
     if (messageType === 0x90) { // note on
-        handleLaunchpadNote(data[1], data[2]);
+        handleNote(data[1], data[2]);
     }
     
 }
 
 export function start() {
-    launchpadSysex([0x00, 0x7f]) // enable programmer mode
+    sendSysex([0x00, 0x7f]) // enable programmer mode
 }

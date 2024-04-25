@@ -12,8 +12,6 @@ const blacklist = [
     "Launchpad X LPX DAW In"
 ]
 
-const launchpadName = "Launchpad X LPX MIDI In";
-
 function addInput(port) {
     if (midiInputs.includes(port)) return;
     console.log(`CONNECTED: ${port.name}`)
@@ -21,7 +19,7 @@ function addInput(port) {
     port.onmidimessage = (event) => {
         handleMidiInput(event, port);
     }
-    if (port.name === launchpadName) {
+    if (Launchpad.matchName(port.name)) {
         Launchpad.start();
     }
 }
@@ -51,17 +49,18 @@ function forwardMidi(event, source) {
 
 function handleMidiInput(event, source) {
     if (forwarding) {
-        if (source.name === launchpadName) {
-            Launchpad.handleLaunchpadInput(event.data)
+        if (Launchpad.matchName(source.name)) {
+            Launchpad.handleInput(event.data)
         } else {
             forwardMidi(event, source);
         }
     }
 }
 
-export function sendMidiTo(outputName, data) {
+export function sendMidiTo(outputMatch, data) {
     midi.outputs.forEach((output) => {
-        if (outputName && output.name !== outputName) return;
+        if (typeof outputMatch === 'function' && !outputMatch(output.name)) return;
+        if (typeof outputMatch === 'string' && output.name !== outputMatch) return;
         console.log(`SENDING TO ${output.name}`);
         console.log(data);
         output.send(data);
