@@ -4,13 +4,13 @@
 import * as Midi from '../midi.js'
 
 export function matchName(name) {
-  return name.includes("M8");
+    return name.includes("M8");
 }
 
 export function sendMidi(data) {
-  Midi.sendMidiTo(matchName, data);
+    Midi.sendMidiTo(matchName, data);
 }
 
 export function sendNote(note, velocity) {
-  sendMidi([0x90, note, velocity]);
+    sendMidi([0x90, note, velocity]);
 }

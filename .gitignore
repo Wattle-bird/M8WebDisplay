@@ -3,3 +3,4 @@ build/
 cert/
 deploy
 TODO
+.vscode/settings.json

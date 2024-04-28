@@ -1,9 +1,10 @@
 // Copyright 2024 Luna Hortin
 // Released under the MIT licence, https://opensource.org/licenses/MIT
 
-import * as Midi from '../midi.js'
-import * as M8 from './m8.js'
-import * as Input from '../input.js'
+import * as Midi from '../midi.js';
+import * as M8 from './m8.js';
+import * as Input from '../input.js';
+import * as Lights from './lights.js';
 
 const controlButtons = ['start', 'select', 'option', 'edit', 'left', 'down', 'up', 'right'];
 
@@ -17,7 +18,7 @@ function sendMidi(data) {
     Midi.sendMidiTo(matchName, data);
 }
 
-function sendSysex(data) {
+export function sendSysex(data) {
     data = [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0c].concat(data); // Launchpad sysex prefix
     data.push(0xf7); // Sysex suffix
     sendMidi(data);
@@ -67,13 +68,13 @@ function handleControlButton(x, y, isDown) {
 }
 
 function handleNote(noteNum, velocity) {
+    const [x, y] = cellPosition(noteNum);
     if (velocity !== 0) {
-        sendNote(noteNum, 0x24); // light up the pressed pad
+        Lights.highlight(x, y);
     } else {
-        sendNote(noteNum, 0); // dim the pressed pad
+        Lights.clear(x, y);
     }
 
-    const [x, y] = cellPosition(noteNum);
     console.log(x, y)
     if (y >= 6 && controlPadEnabled) {
         handleControlButton(x, y, velocity !== 0);
