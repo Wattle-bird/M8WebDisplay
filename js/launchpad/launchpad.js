@@ -96,4 +96,9 @@ export function handleInput(data) {
 
 export function start() {
     sendSysex([0x00, 0x7f]) // enable programmer mode
+    Lights.start()
+}
+
+export function stop() {
+    sendSysex([0x00, 0x01]) // return to note mode
 }
