@@ -2,6 +2,7 @@
 // Released under the MIT licence, https://opensource.org/licenses/MIT
 
 import * as Launchpad from "./launchpad/launchpad.js";
+import * as Settings from "./settings.js";
 
 let midi;
 let midiInputs = [];
@@ -19,7 +20,7 @@ function addInput(port) {
     port.onmidimessage = (event) => {
         handleMidiInput(event, port);
     }
-    if (Launchpad.matchName(port.name)) {
+    if (Launchpad.matchName(port.name) && Settings.get("launchpadSupport")) {
         Launchpad.start();
     }
 }
@@ -48,8 +49,8 @@ function forwardMidi(event, source) {
 }
 
 function handleMidiInput(event, source) {
-    if (forwarding) {
-        if (Launchpad.matchName(source.name)) {
+    if (forwarding ) {
+        if (Launchpad.matchName(source.name) && Settings.get("launchpadSupport")) {
             Launchpad.handleInput(event.data)
         } else {
             forwardMidi(event, source);
@@ -58,6 +59,7 @@ function handleMidiInput(event, source) {
 }
 
 export function sendMidiTo(outputMatch, data) {
+    if (!midi) return;
     midi.outputs.forEach((output) => {
         if (typeof outputMatch === 'function' && !outputMatch(output.name)) return;
         if (typeof outputMatch === 'string' && output.name !== outputMatch) return;

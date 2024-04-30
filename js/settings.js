@@ -27,6 +27,7 @@ setupSelect(
 setupToggle('snapPixels', 'Snap Pixels', true);
 setupToggle('virtualKeyboard', 'Virtual Keyboard', true);
 setupToggle('midiForwarding', 'Midi Forwarding', false);
+setupToggle('launchpadSupport', 'Launchpad Support', false);
 setupToggle('preventSleep', 'Prevent Sleep', false);
 setupButton('controlMapping', 'Control Mapping');
 setupButton('firmware', 'Load Firmware');

@@ -15,6 +15,7 @@ import * as Settings from './settings.js';
 import * as Firmware from './firmware.js';
 import * as Wake from './wake.js';
 import * as Midi from './midi.js'
+import * as Launchpad from './launchpad/launchpad.js'
 
 function setBackground(r, g, b) {
     const colour = `rgb(${r}, ${g}, ${b})`;
@@ -101,6 +102,11 @@ Settings.onChange('enableAudio', value => {
 Settings.onChange('midiForwarding', value => {
     if (value) { Midi.startForwarding() }
     else { Midi.stopForwarding(); }
+});
+
+Settings.onChange('launchpadSupport', value => {
+    if (value) { Launchpad.start(); }
+    else { Launchpad.stop(); }
 });
 
 Settings.onChange('snapPixels', () => resizeCanvas());
