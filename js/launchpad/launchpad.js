@@ -6,9 +6,9 @@ import * as M8 from './m8.js';
 import * as Input from '../input.js';
 import * as Lights from './lights.js';
 
-const controlButtons = ['start', 'select', 'option', 'edit', 'left', 'down', 'up', 'right'];
-
-let controlPadEnabled = true;
+export let controlPadEnabled = false;
+export let notesDown = [];
+export let controlsDown = [];
 
 export function matchName(name) {
     return name.includes("Launchpad") && !name.includes("DAW");
@@ -24,79 +24,99 @@ export function sendSysex(data) {
     sendMidi(data);
 }
 
-function sendNote(note, velocity) {
-    sendMidi([0x90, note, velocity]);
-}
-
 function cellPosition(cell) {
     const x = cell % 10 - 1;
     const y = Math.floor(cell / 10) - 1;
     return [x, y];
 }
 
-function cellToNote(cell) {
-    const [x, y] = cellPosition(cell);
+export function positionToNote(x, y) {
     return 36 + (y*4) + x;
 }
 
 function handleControlButton(x, y, isDown) {
-    let button
+    let control
     if (y === 6) {
         if (x === 0) {
-            button = 'left'
+            control = 'left'
         } else if (x === 1) {
-            button = 'down'
+            control = 'down'
         } else if (x === 2) {
-            button = 'right'
+            control = 'right'
         } else if (x === 6) {
-            button = 'select'
+            control = 'select'
         } else if (x === 7) {
-            button = 'start'
+            control = 'start'
         }
     }
     else if (y === 7) {
         if (x === 1) {
-            button = 'up'
+            control = 'up'
         } else if (x === 6) {
-            button = 'option'
+            control = 'option'
         } else if (x === 7) {
-            button = 'edit'
+            control = 'edit'
         }
     }
-    if (button)
-        Input.sendButton(button, isDown ? "depress" : "release");
+    if (control) {
+        Input.sendButton(control, isDown ? "depress" : "release");
+        if (isDown) {
+            controlsDown.push(control)
+        } else {
+            controlsDown = controlsDown.filter(c => c !== control);
+        }
+        Lights.render();
+    }
 }
 
-function handleNote(noteNum, velocity) {
-    const [x, y] = cellPosition(noteNum);
-    if (velocity !== 0) {
-        Lights.highlight(x, y);
+function toggleControlPad() {
+    controlPadEnabled = !controlPadEnabled;
+    Lights.render()
+}
+
+function handleNote(note, velocity) {
+    if (velocity) {
+        notesDown.push(note);
     } else {
-        Lights.clear(x, y);
+        notesDown = notesDown.filter(n => n !== note);
+    }
+    M8.sendNote(note, velocity);
+    Lights.render()
+}
+
+function handleKey(x, y, velocity) {
+    if (x === 6 && y === 8) {
+        if (velocity) { // only trigger when button is depressed
+            toggleControlPad();
+            return
+        }
     }
 
-    console.log(x, y)
+    if (x > 7 || y > 7) return; // don't do anything for the control buttons
+
+
+
     if (y >= 6 && controlPadEnabled) {
         handleControlButton(x, y, velocity !== 0);
         return;
     }
 
-
-    M8.sendNote(cellToNote(noteNum), velocity);
+    handleNote(positionToNote(x, y), velocity)
 }
 
-export function handleInput(data) {
+export function handleMidiInput(data) {
     const messageType = data[0];
     if (messageType === 0xf0) return; // don't forward sysex
-    if (messageType === 0x90) { // note on
-        handleNote(data[1], data[2]);
+    if (messageType === 0x90 || messageType === 0xb0) { // note (on pads) or CC (buttons) on channel 0
+        const [x, y] = cellPosition(data[1])
+        handleKey(x, y, data[2]);
     }
     
 }
 
 export function start() {
     sendSysex([0x00, 0x7f]) // enable programmer mode
-    Lights.start()
+    Lights.render()
 }
 
 export function stop() {

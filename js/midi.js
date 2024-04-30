@@ -51,7 +51,7 @@ function forwardMidi(event, source) {
 function handleMidiInput(event, source) {
     if (forwarding ) {
         if (Launchpad.matchName(source.name) && Settings.get("launchpadSupport")) {
-            Launchpad.handleInput(event.data)
+            Launchpad.handleMidiInput(event.data)
         } else {
             forwardMidi(event, source);
         }
