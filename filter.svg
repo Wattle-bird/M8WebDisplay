@@ -2,9 +2,7 @@
     <defs>
         <filter id="glow">
             <feGaussianBlur stdDeviation="5" result="blur"></feGaussianBlur>
-            <feBlend in="SourceGraphic" in2="blur" mode="lighten">
-                
-            </feComposite>
+            <feBlend in="SourceGraphic" in2="blur" mode="lighten"></feBlend>
         </filter>
     </defs>
 </svg>
