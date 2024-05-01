@@ -109,5 +109,18 @@
     </div>
 
     <script type="module" src="js/main.js"></script>
+    <svg>
+        <defs>
+            <filter id="glow">
+                <feGaussianBlur stdDeviation="5" result="blur"></feGaussianBlur>
+                <feColorMatrix type="matrix" in="blur" result="blur2"
+            values="1 0 0 0 0
+                    0 1 0 0 0
+                    0 0 1 0 0
+                    0 0 0 0.3 0"></feColorMatrix>
+                <feBlend in="SourceGraphic" in2="blur2" mode="lighten"></feBlend>
+            </filter>
+        </defs>
+    </svg>
 </body>
 </html>
