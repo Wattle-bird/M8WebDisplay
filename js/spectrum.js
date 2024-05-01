@@ -1,11 +1,11 @@
 // Copyright 2024 Luna Hortin
 // Released under the MIT licence, https://opensource.org/licenses/MIT
 
-import AudioMotionAnalyzer from 'https://cdn.skypack.dev/audiomotion-analyzer?min';
-
 let spectrum;
 
-export function start(ctx, stream) {
+export async function start(ctx, stream) {
+    const AudioMotionAnalyzer = (await import('https://cdn.skypack.dev/audiomotion-analyzer?min')).default;
+    console.log(AudioMotionAnalyzer)
     const container = document.getElementById('spectrum');
     spectrum = new AudioMotionAnalyzer(container, {
         audioCtx: ctx,
@@ -17,7 +17,8 @@ export function start(ctx, stream) {
         fillAlpha: 0.2,
         outlineBars: true,
         gradient: "prism",
-        maxFPS: 30
+        maxFPS: 30,
+        smoothing: 0
     });
 
 }

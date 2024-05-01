@@ -10,8 +10,10 @@ DEPLOY = \
 
 CACHE_FILES = \
 	build/icon.png \
-	app.webmanifest
-# build/index.html
+	app.webmanifest \
+  build/index.html \
+	filter.svg
+
 
 
 DEPLOY_DIR = docs/
