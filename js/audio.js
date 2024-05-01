@@ -2,6 +2,7 @@
 // Released under the MIT licence, https://opensource.org/licenses/MIT
 
 import { wait, on, off } from './util.js';
+import * as Spectrum from './spectrum.js';
 
 let ctx;
 let enabled = true;
@@ -40,6 +41,9 @@ export async function start(attempts = 1) {
 
         const source = ctx.createMediaStreamSource(stream);
         source.connect(ctx.destination);
+
+        // TEMP
+        Spectrum.start(ctx, source);
 
         if (ctx.state !== 'running') {
             waitForUserGesture();

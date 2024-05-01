@@ -1,0 +1,13 @@
+// Copyright 2024 Luna Hortin
+// Released under the MIT licence, https://opensource.org/licenses/MIT
+
+#spectrum {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    mix-blend-mode: lighten;
+    overflow-y: hidden;
+}
