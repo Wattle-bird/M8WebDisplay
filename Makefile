@@ -5,15 +5,12 @@ DEPLOY = \
 	build/index.html \
 	build/worker.js \
 	app.webmanifest \
-	build/icon.png \
-	filter.svg
+	build/icon.png
 
 CACHE_FILES = \
 	build/icon.png \
 	app.webmanifest \
-  build/index.html \
-	filter.svg
-
+  build/index.html
 
 
 DEPLOY_DIR = docs/
