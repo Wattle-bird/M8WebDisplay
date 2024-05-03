@@ -43,7 +43,7 @@ export async function start(attempts = 1) {
         source.connect(ctx.destination);
 
         // TEMP
-        Spectrum.start(ctx, source);
+        //Spectrum.start(ctx, source);
 
         if (ctx.state !== 'running') {
             waitForUserGesture();
